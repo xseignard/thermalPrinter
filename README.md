@@ -1,4 +1,6 @@
 # Control the Adafruit/Sparkfun thermal printer from node.js
+[![Build Status](https://travis-ci.org/xseignard/thermalPrinter.svg)](https://travis-ci.org/xseignard/thermalPrinter) [![Code Climate](https://codeclimate.com/github/xseignard/thermalPrinter/coverage.png)](https://codeclimate.com/github/xseignard/thermalPrinter)
+
 
 Largely inspired by http://electronicfields.wordpress.com/2011/09/29/thermal-printer-dot-net/
 

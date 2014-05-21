@@ -11,13 +11,14 @@ var util = require('util'),
 var Printer = function(serialPort, maxPrintingDots, heatingTime, heatingInterval) {
 	EventEmitter.call(this);
 	// Serial port used by printer
+	if (!serialPort.write || !serialPort.drain) throw new Error('The serial port object must have write and drain functions');
 	this.serialPort = serialPort;
 	// Max printing dots (0-255), unit: (n+1)*8 dots, default: 7 ((7+1)*8 = 64 dots)
-	this._maxPrintingDots = maxPrintingDots || 7;
+	this.maxPrintingDots = maxPrintingDots || 7;
 	// Heating time (3-255), unit: 10µs, default: 80 (800µs)
-	this._heatingTime = heatingTime || 80;
+	this.heatingTime = heatingTime || 80;
 	// Heating interval (0-255), unit: 10µs, default: 2 (20µs)
-	this._heatingInterval = heatingInterval || 2;
+	this.heatingInterval = heatingInterval || 2;
 	// command queue
 	this.commandQueue = [];
 	// printmode bytes (normal by default)
@@ -40,6 +41,7 @@ Printer.prototype.print = function(callback) {
 			});
 		},
 		function(err) {
+			_self.commandQueue = [];
 			callback();
 		}
 	);
@@ -71,7 +73,7 @@ Printer.prototype.reset = function() {
 };
 
 Printer.prototype.sendPrintingParams = function() {
-	var commands = [27,55,this._maxPrintingDots, this._heatingTime, this._heatingInterval];
+	var commands = [27,55,this.maxPrintingDots, this.heatingTime, this.heatingInterval];
 	return this.writeCommands(commands);
 };
 
@@ -82,22 +84,20 @@ Printer.prototype.lineFeed = function (linesToFeed) {
 
 Printer.prototype.addPrintMode = function(mode) {
 	this.printMode |= mode;
-	this.writeCommands([27, 33, this.printMode]);
+	return this.writeCommands([27, 33, this.printMode]);
 };
 
 Printer.prototype.removePrintMode = function(mode) {
 	this.printMode &= ~mode;
-	this.writeCommands([27, 33, this.printMode]);
+	return this.writeCommands([27, 33, this.printMode]);
 };
 
 Printer.prototype.bold = function (onOff) {
-	onOff ? this.addPrintMode(8) : this.removePrintMode(8);
-	return this;
+	return onOff ? this.addPrintMode(8) : this.removePrintMode(8);
 };
 
 Printer.prototype.big = function (onOff) {
-	onOff ? this.addPrintMode(56) : this.removePrintMode(56);
-	return this;
+	return onOff ? this.addPrintMode(56) : this.removePrintMode(56);
 };
 
 Printer.prototype.inverse = function (onOff) {
@@ -126,12 +126,12 @@ Printer.prototype.indent = function(columns) {
 	}
 	var commands = [27, 66, columns];
 	return this.writeCommands(commands);
-}
+};
 
 Printer.prototype.setLineSpacing = function(lineSpacing) {
 	var commands = [27, 51, lineSpacing];
 	return this.writeCommands(commands);
-}
+};
 
 Printer.prototype.horizontalLine = function(length) {
 	var commands = [];
@@ -145,7 +145,7 @@ Printer.prototype.horizontalLine = function(length) {
 		commands.push(10);
 	}
 	return this.writeCommands(commands);
-}
+};
 
 Printer.prototype.printLine = function (text) {
 	var commands = [new Buffer(text), 10];
