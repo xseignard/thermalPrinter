@@ -14,7 +14,7 @@ You'll need an USB/Serial converter.
 
 
 ## Usage
-- install with `npm install adafruitThermalPrinter --save` 
+- install with `npm install thermalprinter --save` 
 - check the demo sample:
 
 ```js
