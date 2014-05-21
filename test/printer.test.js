@@ -1,4 +1,5 @@
 'use strict';
+/*jshint expr: true*/
 var should = require('chai').should(),
 	Printer = require('../src/printer'),
 	printer;
