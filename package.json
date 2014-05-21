@@ -9,7 +9,7 @@
   "main": "./src/printer.js",
   "author": "Xavier Seignard <xavier.seignard@gmail.com>",
   "scripts": {
-    "test": "make test",
+    "test": "make test"
   },
   "keywords": [
     "adafruit",
