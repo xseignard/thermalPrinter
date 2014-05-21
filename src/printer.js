@@ -18,15 +18,10 @@ var Printer = function(serialPort, maxPrintingDots, heatingTime, heatingInterval
 	this._heatingTime = heatingTime || 80;
 	// Heating interval (0-255), unit: 10µs, default: 2 (20µs)
 	this._heatingInterval = heatingInterval || 2;
-
 	// command queue
 	this.commandQueue = [];
-
 	// printmode bytes (normal by default)
 	this.printMode = 0;
-
-	// delay between lines in picture mode and writing mode
-	this.sleepTime = 1;
 
 	var _self = this;
 	this.reset().sendPrintingParams().print(function() {
@@ -181,7 +176,6 @@ Printer.prototype.printImage = function(path) {
 				var pixel = ctx.getImageData(x*8+n, y, 1, 1).data;
 				var brightness = helpers.rgbToHsl(pixel[0], pixel[1], pixel[2])[2];
 				// only print dark stuff
-				var shouldPrint;
 				if (brightness < 0.6) {
 					imgData[y][x] += (1 << n);
 				}
