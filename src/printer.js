@@ -40,7 +40,7 @@ Printer.prototype.print = function(callback) {
 	async.eachSeries(
 		_self.commandQueue,
 		function(command, callback) {
-			if (!_self.commandDelay !== 0) {
+			if (_self.commandDelay !== 0) {
 				sleep.usleep(_self.commandDelay);
 			}
 			_self.serialPort.write(command, function() {

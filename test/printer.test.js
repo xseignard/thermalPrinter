@@ -26,7 +26,7 @@ var verifyCommand = function(expected, commandName, param, done) {
 				expectedBuffer.writeUInt8(expected[i], 0);
 			}
 			printer.commandQueue[i].toString().should.equal(expectedBuffer.toString());
-		};
+		}
 		done();
 	});
 };
