@@ -5,20 +5,24 @@ var util = require('util'),
 	Canvas = require('canvas'),
 	Image = Canvas.Image,
 	async = require('async'),
+	sleep = require('sleep'),
 	helpers = require('./helpers');
 
 
-var Printer = function(serialPort, maxPrintingDots, heatingTime, heatingInterval) {
+var Printer = function(serialPort, opts) {
 	EventEmitter.call(this);
 	// Serial port used by printer
 	if (!serialPort.write || !serialPort.drain) throw new Error('The serial port object must have write and drain functions');
 	this.serialPort = serialPort;
+	opts = opts || {};
 	// Max printing dots (0-255), unit: (n+1)*8 dots, default: 7 ((7+1)*8 = 64 dots)
-	this.maxPrintingDots = maxPrintingDots || 7;
+	this.maxPrintingDots = opts.maxPrintingDots || 7;
 	// Heating time (3-255), unit: 10µs, default: 80 (800µs)
-	this.heatingTime = heatingTime || 80;
+	this.heatingTime = opts.heatingTime || 80;
 	// Heating interval (0-255), unit: 10µs, default: 2 (20µs)
-	this.heatingInterval = heatingInterval || 2;
+	this.heatingInterval = opts.heatingInterval || 2;
+	// delay between 2 commands (in µs)
+	this.commandDelay = opts.commandDelay || 0;
 	// command queue
 	this.commandQueue = [];
 	// printmode bytes (normal by default)
@@ -36,6 +40,9 @@ Printer.prototype.print = function(callback) {
 	async.eachSeries(
 		_self.commandQueue,
 		function(command, callback) {
+			if (!_self.commandDelay !== 0) {
+				sleep.usleep(_self.commandDelay);
+			}
 			_self.serialPort.write(command, function() {
 				_self.serialPort.drain(callback);
 			});

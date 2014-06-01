@@ -8,7 +8,13 @@ var nodebots = __dirname + '/../images/nodebot.png';
 var logo = __dirname + '/../images/logo.png';
 
 serialPort.on('open',function() {
-	var printer = new Printer(serialPort);
+	var opts = {
+		maxPrintingDots: 15,
+		heatingTime: 150,
+		heatingInterval: 4,
+		commandDelay: 5
+	};
+	var printer = new Printer(serialPort, opts);
 	printer.on('ready', function() {
 		printer
 			.indent(10)
