@@ -199,9 +199,21 @@ describe('Printer', function() {
 			var expected = [27, 66, 10];
 			verifyCommand(expected, 'indent', 10, done);
 		});
+		it('should not indent since the number of indent is out of bounds', function(done) {
+			var expected = [27, 66, 0];
+			verifyCommand(expected, 'indent', -1, done);
+		});
+		it('should not indent since the number of indent is out of bounds', function(done) {
+			var expected = [27, 66, 0];
+			verifyCommand(expected, 'indent', 32, done);
+		});
 	});
 
 	describe('Printer.setLineSpacing()', function() {
+		it('should add the right commands in the queue', function(done) {
+			var expected = [27, 51, 12];
+			verifyCommand(expected, 'setLineSpacing', 12, done);
+		});
 		it('should add the right commands in the queue', function(done) {
 			var expected = [27, 51, 12];
 			verifyCommand(expected, 'setLineSpacing', 12, done);
@@ -213,12 +225,42 @@ describe('Printer', function() {
 			var expected = [196, 196, 196, 10];
 			verifyCommand(expected, 'horizontalLine', 3, done);
 		});
+		it('should add the right commands in the queue', function(done) {
+			var expected = [];
+			verifyCommand(expected, 'horizontalLine', -1, done);
+		});
+		it('should add the right commands in the queue', function(done) {
+			var expected = [196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 196, 10];
+			verifyCommand(expected, 'horizontalLine', 45, done);
+		});
 	});
 
 	describe('Printer.printLine()', function() {
 		it('should add the right commands in the queue', function(done) {
 			var expected = [new Buffer('test'), 10];
 			verifyCommand(expected, 'printLine', 'test', done);
+		});
+	});
+
+	describe('Printer.printImage()', function() {
+		it('should throw an error because the image is larger than 384px', function(done) {
+			var imgPath = __dirname + '/../images/schema.png';
+			var printer = new Printer(fakeSerialPort);
+			printer.on('ready', function() {
+				(function() {
+					printer.printImage(imgPath);
+				}).should.throw(Error);
+				done();
+			});
+		});
+		it('should throw an error because the image is larger than 384px', function(done) {
+			var imgPath = __dirname + '/../images/testImg.png';
+			var printer = new Printer(fakeSerialPort);
+			printer.on('ready', function() {
+				printer.printImage(imgPath);
+				printer.commandQueue.length.should.equal(100);
+				done();
+			});
 		});
 	});
 });

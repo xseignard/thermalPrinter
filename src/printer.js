@@ -8,7 +8,32 @@ var util = require('util'),
 	sleep = require('sleep'),
 	helpers = require('./helpers');
 
-
+/*
+ * Printer opts.
+ *
+ * maxPrintingDots = 0-255. Max heat dots, Unit (8dots), Default: 7 (64 dots)
+ * heatingTime = 3-255. Heating time, Unit (10us), Default: 80 (800us)
+ * heatingInterval = 0-255. Heating interval, Unit (10µs), Default: 2 (20µs)
+ *
+ * The more max heating dots, the more peak current will cost when printing,
+ * the faster printing speed. The max heating dots is 8*(n+1).
+ *
+ * The more heating time, the more density, but the slower printing speed.
+ * If heating time is too short, blank page may occur.
+ *
+ * The more heating interval, the more clear, but the slower printing speed.
+ *
+ * Example with default values.
+ *
+ * var Printer = require('thermalprinter'),
+ *     opts = {
+ *       maxPrintingDots : 7,
+ *       heatingTime : 80,
+ *       heatingInterval : 2,
+ *       commandDelay: 0
+ *     };
+ * var printer = new Printer(mySerialPort, opts);
+ */
 var Printer = function(serialPort, opts) {
 	EventEmitter.call(this);
 	// Serial port used by printer
