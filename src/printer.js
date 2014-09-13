@@ -137,6 +137,11 @@ Printer.prototype.underline = function(dots){
   return this.writeCommands(commands);
 };
 
+Printer.prototype.fontB = function(onOff){
+  var commands = [27, 33, (onOff == true ? 1 : 0)]
+  return this.writeCommands(commands);  
+}
+
 Printer.prototype.inverse = function (onOff) {
 	var commands = onOff ? [29, 66, 1] : [29, 66, 0];
 	return this.writeCommands(commands);

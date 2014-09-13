@@ -185,6 +185,18 @@ describe('Printer', function() {
 		});
 	});
 
+	describe('Printer.fontB()', function() {
+		it('should add the right commands in the queue when turning on', function(done) {
+			var expected = [27, 33, 1];
+			verifyCommand(expected, 'fontB', true, done);
+		});
+		it('should add the right commands in the queue when turning off', function(done) {
+			var expected = [27, 33, 0];
+			verifyCommand(expected, 'fontB', false, done);
+		});
+	});
+
+
 	describe('Printer.left()', function() {
 		it('should add the right commands in the queue', function(done) {
 			var expected = [27, 97, 0];
