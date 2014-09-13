@@ -196,6 +196,16 @@ describe('Printer', function() {
 		});
 	});
 
+	describe('Printer.upsideDown()', function() {
+		it('should add the right commands in the queue when turning on', function(done) {
+			var expected = [27, 123, 1];
+			verifyCommand(expected, 'upsideDown', true, done);
+		});
+		it('should add the right commands in the queue when turning off', function(done) {
+			var expected = [27, 123, 0];
+			verifyCommand(expected, 'upsideDown', false, done);
+		});
+	});
 
 	describe('Printer.left()', function() {
 		it('should add the right commands in the queue', function(done) {

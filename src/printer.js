@@ -142,6 +142,11 @@ Printer.prototype.fontB = function(onOff){
   return this.writeCommands(commands);  
 }
 
+Printer.prototype.upsideDown = function(on){
+  var commands = [27, 123, (on == true ? 1 : 0)]
+  return this.writeCommands(commands);  
+}
+
 Printer.prototype.inverse = function (onOff) {
 	var commands = onOff ? [29, 66, 1] : [29, 66, 0];
 	return this.writeCommands(commands);
