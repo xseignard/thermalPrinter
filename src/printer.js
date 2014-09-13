@@ -240,4 +240,34 @@ Printer.prototype.printImage = function(path) {
 	return this;
 };
 
+// Barcodes
+
+// Set barcodeTextPosition
+//
+// Position can be:
+// 0: Not printed
+// 1: Above the barcode
+// 2: Below the barcode
+// 3: Both above and below the barcode
+Printer.prototype.barcodeTextPosition = function(pos){
+  if(pos > 3 || pos < 0){
+    return this;
+  }
+
+  var commands = [29, 72, pos];
+  return this.writeCommands(commands);
+}
+
+// Set barcode height
+// 0 < h < 255 (default = 50)
+Printer.prototype.barcodeHeight = function(h){
+  if(h > 255 || h < 0){
+    return this;
+  }
+
+  var commands = [29, 104, h];
+  return this.writeCommands(commands);
+}
+
+
 module.exports = Printer;

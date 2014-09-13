@@ -297,4 +297,55 @@ describe('Printer', function() {
 			});
 		});
 	});
+
+	describe('Printer.barcodeTextPosition()', function() {
+		it('should add the right commands in the queue on position 0', function(done) {
+			var expected = [29, 72, 0];
+			verifyCommand(expected, 'barcodeTextPosition', 0, done);
+		});
+		it('should add the right commands in the queue on position 1', function(done) {
+			var expected = [29, 72, 1];
+			verifyCommand(expected, 'barcodeTextPosition', 1, done);
+		});
+		it('should add the right commands in the queue on position 2', function(done) {
+			var expected = [29, 72, 2];
+			verifyCommand(expected, 'barcodeTextPosition', 2, done);
+		});
+		it('should add the right commands in the queue on position 3', function(done) {
+			var expected = [29, 72, 3];
+			verifyCommand(expected, 'barcodeTextPosition', 3, done);
+		});
+		it('should not add any commands in the queue on invalid positions', function(done) {
+			var expected = [];
+			verifyCommand(expected, 'barcodeTextPosition', 4, done);
+		});
+		it('should not add any commands in the queue on invalid positions', function(done) {
+			var expected = [];
+			verifyCommand(expected, 'barcodeTextPosition', -1, done);
+		});		
+	});
+
+	describe('Printer.barcodeHeight()', function() {
+		it('should add the right commands in the queue on height 10', function(done) {
+			var expected = [29, 104, 10];
+			verifyCommand(expected, 'barcodeHeight', 10, done);
+		});
+
+		it('should add the right commands in the queue on height 100', function(done) {
+			var expected = [29, 104, 100];
+			verifyCommand(expected, 'barcodeHeight', 100, done);
+		});	
+
+		it('should not add any commands in the queue on height > 255', function(done) {
+			var expected = [];
+			verifyCommand(expected, 'barcodeHeight', 256, done);
+		});	
+
+		it('should not add any commands in the queue on height < 0', function(done) {
+			var expected = [];
+			verifyCommand(expected, 'barcodeHeight', -1, done);
+		});	
+
+	});
+
 });
