@@ -132,6 +132,11 @@ Printer.prototype.big = function (onOff) {
 	return onOff ? this.addPrintMode(56) : this.removePrintMode(56);
 };
 
+Printer.prototype.underline = function(dots){
+  var commands = [27, 45, dots]
+  return this.writeCommands(commands);
+};
+
 Printer.prototype.inverse = function (onOff) {
 	var commands = onOff ? [29, 66, 1] : [29, 66, 0];
 	return this.writeCommands(commands);
