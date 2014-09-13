@@ -133,19 +133,19 @@ Printer.prototype.big = function (onOff) {
 };
 
 Printer.prototype.underline = function(dots){
-  var commands = [27, 45, dots]
+  var commands = [27, 45, dots];
   return this.writeCommands(commands);
 };
 
 Printer.prototype.fontB = function(onOff){
-  var commands = [27, 33, (onOff == true ? 1 : 0)]
+  var commands = [27, 33, (onOff === true ? 1 : 0)];
   return this.writeCommands(commands);  
-}
+};
 
-Printer.prototype.upsideDown = function(on){
-  var commands = [27, 123, (on == true ? 1 : 0)]
+Printer.prototype.upsideDown = function(onOff){
+  var commands = [27, 123, (onOff === true ? 1 : 0)];
   return this.writeCommands(commands);  
-}
+};
 
 Printer.prototype.inverse = function (onOff) {
 	var commands = onOff ? [29, 66, 1] : [29, 66, 0];
