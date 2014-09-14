@@ -274,6 +274,9 @@ Printer.BARCODE_CHARSETS = {
   ASCII: function(n){ return n >= 0 && n <= 127; }
 };
 
+// These are all valid barcode types.
+// Pass this object to printer.barcode() as type:
+// 		printer.barcode(Printer.BARCODE_TYPES.UPCA, "data");
 Printer.BARCODE_TYPES = {
   UPCA : {
     code: 65,
@@ -299,7 +302,7 @@ Printer.BARCODE_TYPES = {
     code: 69,
     size: function(n){ return n > 1; },
     chars: function(n){ 
-      // " $%+0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      // " $%+-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
       return (
         n == 32 ||
         n == 36 ||
@@ -319,6 +322,7 @@ Printer.BARCODE_TYPES = {
     code: 71,
     size: function(n){ return n > 1; },
     chars: function(n){ 
+    	// "$+-./0123456789:ABCD"
       return (
         n == 36 ||
         n == 43 ||
