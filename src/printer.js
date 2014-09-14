@@ -350,19 +350,25 @@ Printer.BARCODE_TYPES = {
 };
 
 Printer.prototype.barcode = function(type, data){
+	var error;
   var commands = [29, 107];
   commands.push(type.code);
   commands.push(data.length);
 
   // Validate size
   if(!type.size(data.length)){
-    return this;
+  	error = new Error('Data length does not match specification for this type of barcode');
+  	error.name = "invalid_data_size";
+    throw error;
   }
 
   for(var i=0; i < data.length; i++){
     var code = data.charCodeAt(i);  
     if(!type.chars(code)){
-      return this;
+    	error = new Error('Character ' + code + ' is not valid for this type of barcode');
+    	error.name = "invalid_character";
+    	error.char = code;
+      throw error;
     }
 
     commands.push(code);
