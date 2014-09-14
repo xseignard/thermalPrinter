@@ -256,7 +256,7 @@ Printer.prototype.barcodeTextPosition = function(pos){
 
   var commands = [29, 72, pos];
   return this.writeCommands(commands);
-}
+};
 
 // Set barcode height
 // 0 < h < 255 (default = 50)
@@ -267,12 +267,12 @@ Printer.prototype.barcodeHeight = function(h){
 
   var commands = [29, 104, h];
   return this.writeCommands(commands);
-}
+};
 
 Printer.BARCODE_CHARSETS = {
-  NUMS: function(n){ return n >= 48 && n <= 57 },
-  ASCII: function(n){ return n >= 0 && n <= 127 }
-}
+  NUMS: function(n){ return n >= 48 && n <= 57; },
+  ASCII: function(n){ return n >= 0 && n <= 127; }
+};
 
 Printer.BARCODE_TYPES = {
   UPCA : {
@@ -307,12 +307,12 @@ Printer.BARCODE_TYPES = {
         n == 43 ||
         (n >= 45 && n <= 57) ||
         (n >= 65 && n <= 90)
-      )
+      );
      } 
   },
   I25 : {
     code: 70,
-    size: function(n){ return n > 1 && n % 2 == 0; },
+    size: function(n){ return n > 1 && n % 2 === 0; },
     chars: Printer.BARCODE_CHARSETS.NUMS
   },
   CODEBAR : {
@@ -324,7 +324,7 @@ Printer.BARCODE_TYPES = {
         n == 43 ||
         (n >= 45 && n <= 58) ||
         (n >= 65 && n <= 68)
-      )
+      );
      } 
   },
   CODE93 : {
@@ -347,7 +347,7 @@ Printer.BARCODE_TYPES = {
     size: function(n){ return n > 1; },
     chars: Printer.BARCODE_CHARSETS.NUMS
   }
-}
+};
 
 Printer.prototype.barcode = function(type, data){
   var commands = [29, 107];
@@ -357,7 +357,7 @@ Printer.prototype.barcode = function(type, data){
   // Validate size
   if(!type.size(data.length)){
     return this;
-  };
+  }
 
   for(var i=0; i < data.length; i++){
     var code = data.charCodeAt(i);  
@@ -369,8 +369,6 @@ Printer.prototype.barcode = function(type, data){
   }
 
   return this.writeCommands(commands);
-}
-
-
+};
 
 module.exports = Printer;
