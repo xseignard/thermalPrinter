@@ -337,13 +337,23 @@ describe('Printer', function() {
 			var expected = [29, 72, 3];
 			verifyCommand(expected, 'barcodeTextPosition', 3, done);
 		});
-		it('should not add any commands in the queue on invalid positions', function(done) {
-			var expected = [];
-			verifyCommand(expected, 'barcodeTextPosition', 4, done);
+		it('should throw an error on invalid positions', function(done) {
+			var printer = new Printer(fakeSerialPort);
+			printer.on('ready', function() {
+				(function() {
+					printer.barcodeTextPosition(4);
+				}).should.throw(Error);
+				done();
+			});
 		});
-		it('should not add any commands in the queue on invalid positions', function(done) {
-			var expected = [];
-			verifyCommand(expected, 'barcodeTextPosition', -1, done);
+		it('should throw an error on invalid positions', function(done) {
+			var printer = new Printer(fakeSerialPort);
+			printer.on('ready', function() {
+				(function() {
+					printer.barcodeTextPosition(-1);
+				}).should.throw(Error);
+				done();
+			});
 		});		
 	});
 
@@ -358,14 +368,24 @@ describe('Printer', function() {
 			verifyCommand(expected, 'barcodeHeight', 100, done);
 		});	
 
-		it('should not add any commands in the queue on height > 255', function(done) {
-			var expected = [];
-			verifyCommand(expected, 'barcodeHeight', 256, done);
+		it('should throw an error on height > 255', function(done) {
+			var printer = new Printer(fakeSerialPort);
+			printer.on('ready', function() {
+				(function() {
+					printer.barcodeHeight(256);
+				}).should.throw(Error);
+				done();
+			});
 		});	
 
-		it('should not add any commands in the queue on height < 0', function(done) {
-			var expected = [];
-			verifyCommand(expected, 'barcodeHeight', -1, done);
+		it('should throw an error on height < 0', function(done) {
+			var printer = new Printer(fakeSerialPort);
+			printer.on('ready', function() {
+				(function() {
+					printer.barcodeHeight(-1);
+				}).should.throw(Error);
+				done();
+			});
 		});	
 
 	});

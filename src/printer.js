@@ -250,8 +250,10 @@ Printer.prototype.printImage = function(path) {
 // 2: Below the barcode
 // 3: Both above and below the barcode
 Printer.prototype.barcodeTextPosition = function(pos){
+	var error;
+
   if(pos > 3 || pos < 0){
-    return this;
+  	throw new Error('Position must be 0, 1, 2 or 3');
   }
 
   var commands = [29, 72, pos];
@@ -262,7 +264,7 @@ Printer.prototype.barcodeTextPosition = function(pos){
 // 0 < h < 255 (default = 50)
 Printer.prototype.barcodeHeight = function(h){
   if(h > 255 || h < 0){
-    return this;
+    throw new Error('Height must be 0 < height > 255');
   }
 
   var commands = [29, 104, h];
