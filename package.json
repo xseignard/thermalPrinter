@@ -9,7 +9,7 @@
   "main": "./src/printer.js",
   "author": "Xavier Seignard <xavier.seignard@gmail.com>",
   "contributors": [
-      { "name": "Flurin Egger", "email": "<flurin@digitpaint.nl>" },
+      { "name": "Flurin Egger", "email": "<flurin@digitpaint.nl>" }
   ],
   "scripts": {
     "test": "make test"
