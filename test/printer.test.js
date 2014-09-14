@@ -16,7 +16,12 @@ var verifyCommand = function(expected, commandName, param, done) {
 	var printer = new Printer(fakeSerialPort);
 	printer.on('ready', function() {
 		printer.commandQueue.should.be.empty;
-		printer[commandName](param);
+		if(param instanceof Array){
+			printer[commandName].apply(printer, param);
+		} else {
+			printer[commandName](param);	
+		}
+		
 		printer.commandQueue.length.should.equal(expected.length);
 		for (var i = 0; i < expected.length; i++) {
 			printer.commandQueue[i].should.be.instanceOf(Buffer);
