@@ -36,6 +36,23 @@ var verifyCommand = function(expected, commandName, param, done) {
 	});
 };
 
+var verifyBarcodeError = function(type, data, error_name, done){
+	var printer = new Printer(fakeSerialPort);
+	printer.on('ready', function() {
+		(function() {
+			printer.barcode(type, data);
+		}).should.throw(Error);
+
+		try{
+			printer.barcode(type, data);
+		} catch(error){
+			error.name.should.equal(error_name);
+		}
+
+		done();
+	});
+};
+
 describe('Printer', function() {
 
 	describe('new Printer()', function() {
@@ -350,6 +367,324 @@ describe('Printer', function() {
 			var expected = [];
 			verifyCommand(expected, 'barcodeHeight', -1, done);
 		});	
+
+	});
+
+	describe('Printer.barcode()', function(){
+		describe('type UPC-A', function(){
+
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.UPCA;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = '012345678901';
+				var expected = [29, 107, 65, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is > 12', function(done){
+				var data = '0123456789011';
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			it('should not add any commands in the queue if data length is < 11', function(done){
+				var data = '0123456789';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['a','A','+'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not numbers', function(done){
+					var data = '0123456789' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});
+
+		describe('type UPC-E', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.UPCE;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = '012345678901';
+				var expected = [29, 107, 66, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is > 12', function(done){
+				var data = '0123456789011';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			it('should not add any commands in the queue if data length is < 11', function(done){
+				var data = '0123456789';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['a','A','+'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not numbers', function(done){
+					var data = '0123456789' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+
+		});
+
+		describe('type EAN13', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.EAN13;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = '0123456789012';
+				var expected = [29, 107, 67, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is > 13', function(done){
+				var data = '01234567890123';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			it('should not add any commands in the queue if data length is < 12', function(done){
+				var data = '01234567890';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['a','A','+'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not numbers', function(done){
+					var data = '01234567890' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});
+
+		describe('type EAN8', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.EAN8;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = '01234567';
+				var expected = [29, 107, 68, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is > 8', function(done){
+				var data = '012345678';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			it('should not add any commands in the queue if data length is < 7', function(done){
+				var data = '012345';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['a','A','+'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not numbers', function(done){
+					var data = '012345' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});
+
+		describe('type CODE39', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.CODE39;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = ' $%+-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+				var expected = [29, 107, 69, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is < 1', function(done){
+				var data = '0';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+
+			['a','!','é'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are invalid', function(done){
+					var data = '0' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});
+
+		describe('type I25', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.I25;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = '01';
+				var expected = [29, 107, 70, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is < 1', function(done){
+				var data = '0';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			it('should not add any commands in the queue if data length is not even', function(done){
+				var data = '012';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['a','A','+'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not numbers', function(done){
+					var data = '0' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});		
+
+		describe('type CODEBAR', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.CODEBAR;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = '$+-./0123456789:ABCD';
+				var expected = [29, 107, 71, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is < 1', function(done){
+				var data = '0';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['?','Z'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not valid', function(done){
+					var data = '0' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});		
+
+		describe('type CODE93', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.CODE93;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = ' $+-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ~';
+				var expected = [29, 107, 72, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is < 1', function(done){
+				var data = '0';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['€','™'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not ASCII', function(done){
+					var data = '0' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});	
+
+		describe('type CODE128', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.CODE128;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = ' $+-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ~';
+				var expected = [29, 107, 73, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is < 1', function(done){
+				var data = '0';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['€','™'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not ASCII', function(done){
+					var data = '0' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});	
+
+		describe('type CODE11', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.CODE11;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = '01234567890123456789';
+				var expected = [29, 107, 74, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is < 1', function(done){
+				var data = '0';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['a','A','+'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not numbers', function(done){
+					var data = '0' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});		
+
+		describe('type MSI', function(){
+			beforeEach(function(){
+				this.type = Printer.BARCODE_TYPES.MSI;
+			});
+
+			it('should add the right commands in the queue', function(done) {
+				var data = '01234567890123456789';
+				var expected = [29, 107, 75, data.length];
+				expected = expected.concat(data.split('').map(function(c){ return c.charCodeAt(0); }));
+
+				verifyCommand(expected, 'barcode', [this.type, data], done);
+			});
+
+			it('should not add any commands in the queue if data length is < 1', function(done){
+				var data = '0';				
+				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
+			});
+
+			['a','A','+'].forEach(function(v){
+				it('should not add any commands in the queue if data characters are not numbers', function(done){
+					var data = '0' + v;				
+					verifyBarcodeError(this.type, data, 'invalid_character', done);
+				});
+			});
+		});		
+
 
 	});
 
