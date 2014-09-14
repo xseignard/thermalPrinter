@@ -385,18 +385,18 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is > 12', function(done){
+			it('should throw an "invalid_data_size" error if data length is  > 12', function(done){
 				var data = '0123456789011';
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
-			it('should not add any commands in the queue if data length is < 11', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 11', function(done){
 				var data = '0123456789';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['a','A','+'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not numbers', function(done){
+				it('should throw an "invalid_character" error if data characters are not numbers', function(done){
 					var data = '0123456789' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -416,18 +416,18 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is > 12', function(done){
+			it('should throw an "invalid_data_size" error if data length is  > 12', function(done){
 				var data = '0123456789011';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
-			it('should not add any commands in the queue if data length is < 11', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 11', function(done){
 				var data = '0123456789';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['a','A','+'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not numbers', function(done){
+				it('should throw an "invalid_character" error if data characters are not numbers', function(done){
 					var data = '0123456789' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -448,18 +448,18 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is > 13', function(done){
+			it('should throw an "invalid_data_size" error if data length is  > 13', function(done){
 				var data = '01234567890123';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
-			it('should not add any commands in the queue if data length is < 12', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 12', function(done){
 				var data = '01234567890';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['a','A','+'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not numbers', function(done){
+				it('should throw an "invalid_character" error if data characters are not numbers', function(done){
 					var data = '01234567890' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -479,18 +479,18 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is > 8', function(done){
+			it('should throw an "invalid_data_size" error if data length is  > 8', function(done){
 				var data = '012345678';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
-			it('should not add any commands in the queue if data length is < 7', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 7', function(done){
 				var data = '012345';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['a','A','+'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not numbers', function(done){
+				it('should throw an "invalid_character" error if data characters are not numbers', function(done){
 					var data = '012345' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -510,14 +510,14 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is < 1', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 1', function(done){
 				var data = '0';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 
 			['a','!','é'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are invalid', function(done){
+				it('should throw an "invalid_character" error if data characters are invalid', function(done){
 					var data = '0' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -537,18 +537,18 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is < 1', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 1', function(done){
 				var data = '0';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
-			it('should not add any commands in the queue if data length is not even', function(done){
+			it('should throw an "invalid_data_size" error if data length is  not even', function(done){
 				var data = '012';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['a','A','+'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not numbers', function(done){
+				it('should throw an "invalid_character" error if data characters are not numbers', function(done){
 					var data = '0' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -568,13 +568,13 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is < 1', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 1', function(done){
 				var data = '0';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['?','Z'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not valid', function(done){
+				it('should throw an "invalid_character" error if data characters are not valid', function(done){
 					var data = '0' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -594,13 +594,13 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is < 1', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 1', function(done){
 				var data = '0';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['€','™'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not ASCII', function(done){
+				it('should throw an "invalid_character" error if data characters are not ASCII', function(done){
 					var data = '0' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -620,13 +620,13 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is < 1', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 1', function(done){
 				var data = '0';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['€','™'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not ASCII', function(done){
+				it('should throw an "invalid_character" error if data characters are not ASCII', function(done){
 					var data = '0' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -646,13 +646,13 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is < 1', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 1', function(done){
 				var data = '0';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['a','A','+'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not numbers', function(done){
+				it('should throw an "invalid_character" error if data characters are not numbers', function(done){
 					var data = '0' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
@@ -672,13 +672,13 @@ describe('Printer', function() {
 				verifyCommand(expected, 'barcode', [this.type, data], done);
 			});
 
-			it('should not add any commands in the queue if data length is < 1', function(done){
+			it('should throw an "invalid_data_size" error if data length is  < 1', function(done){
 				var data = '0';				
 				verifyBarcodeError(this.type, data, 'invalid_data_size', done);
 			});
 
 			['a','A','+'].forEach(function(v){
-				it('should not add any commands in the queue if data characters are not numbers', function(done){
+				it('should throw an "invalid_character" error if data characters are not numbers', function(done){
 					var data = '0' + v;				
 					verifyBarcodeError(this.type, data, 'invalid_character', done);
 				});
