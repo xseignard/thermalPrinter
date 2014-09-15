@@ -1,6 +1,6 @@
 {
   "name": "thermalprinter",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "Use node.js to communicate with Adafruit/Sparkfun Thermal Printer",
   "repository": {
     "type": "git",
@@ -9,7 +9,10 @@
   "main": "./src/printer.js",
   "author": "Xavier Seignard <xavier.seignard@gmail.com>",
   "contributors": [
-      { "name": "Flurin Egger", "email": "<flurin@digitpaint.nl>" }
+    {
+      "name": "Flurin Egger",
+      "email": "<flurin@digitpaint.nl>"
+    }
   ],
   "scripts": {
     "test": "make test"
