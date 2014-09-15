@@ -207,14 +207,14 @@ describe('Printer', function() {
 		});
 	});
 
-	describe('Printer.fontB()', function() {
+	describe('Printer.small()', function() {
 		it('should add the right commands in the queue when turning on', function(done) {
 			var expected = [27, 33, 1];
-			verifyCommand(expected, 'fontB', true, done);
+			verifyCommand(expected, 'small', true, done);
 		});
 		it('should add the right commands in the queue when turning off', function(done) {
 			var expected = [27, 33, 0];
-			verifyCommand(expected, 'fontB', false, done);
+			verifyCommand(expected, 'small', false, done);
 		});
 	});
 
