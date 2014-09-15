@@ -137,7 +137,7 @@ Printer.prototype.underline = function(dots){
   return this.writeCommands(commands);
 };
 
-Printer.prototype.fontB = function(onOff){
+Printer.prototype.small = function(onOff){
   var commands = [27, 33, (onOff === true ? 1 : 0)];
   return this.writeCommands(commands);  
 };
