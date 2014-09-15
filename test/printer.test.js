@@ -166,10 +166,44 @@ describe('Printer', function() {
 		});
 	});
 
+	describe('Printer.underline()', function () {
+		it('should add the right commands in the queue when setting underline to 0', function(done) {
+			var expected = [27, 45, 0];
+			verifyCommand(expected, 'underline', 0, done);
+		});	
+
+		it('should add the right commands in the queue when setting underline to 5', function(done) {
+			var expected = [27, 45, 5];
+			verifyCommand(expected, 'underline', 5, done);
+		});			
+	});
+
 	describe('Printer.inverse()', function() {
 		it('should add the right commands in the queue', function(done) {
 			var expected = [29, 66, 1];
 			verifyCommand(expected, 'inverse', true, done);
+		});
+	});
+
+	describe('Printer.small()', function() {
+		it('should add the right commands in the queue when turning on', function(done) {
+			var expected = [27, 33, 1];
+			verifyCommand(expected, 'small', true, done);
+		});
+		it('should add the right commands in the queue when turning off', function(done) {
+			var expected = [27, 33, 0];
+			verifyCommand(expected, 'small', false, done);
+		});
+	});
+
+	describe('Printer.upsideDown()', function() {
+		it('should add the right commands in the queue when turning on', function(done) {
+			var expected = [27, 123, 1];
+			verifyCommand(expected, 'upsideDown', true, done);
+		});
+		it('should add the right commands in the queue when turning off', function(done) {
+			var expected = [27, 123, 0];
+			verifyCommand(expected, 'upsideDown', false, done);
 		});
 	});
 
