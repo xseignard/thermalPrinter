@@ -50,3 +50,7 @@ serialPort.on('open',function() {
 	});
 });
 ```
+
+## Demo
+
+![demo](/images/demo.gif)
