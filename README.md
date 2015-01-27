@@ -24,7 +24,7 @@ var SerialPort = require('serialport').SerialPort,
 	serialPort = new SerialPort('/dev/ttyUSB0', {
 		baudrate: 19200
 	}),
-	Printer = require('../src/printer');
+	Printer = require('thermalprinter');
 
 var path = __dirname + '/images/nodebot.png';
 
