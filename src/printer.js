@@ -5,7 +5,6 @@ var util = require('util'),
 	getPixels = require('get-pixels'),
 	deasync = require('deasync'),
 	async = require('async'),
-	sleep = require('sleep'),
 	helpers = require('./helpers');
 
 /*
@@ -65,12 +64,18 @@ Printer.prototype.print = function(callback) {
 	async.eachSeries(
 		_self.commandQueue,
 		function(command, callback) {
-			if (_self.commandDelay !== 0) {
-				sleep.usleep(_self.commandDelay);
+			function write() {
+				_self.serialPort.write(command, function() {
+					_self.serialPort.drain(callback);
+				});
 			}
-			_self.serialPort.write(command, function() {
-				_self.serialPort.drain(callback);
-			});
+
+			if (_self.commandDelay === 0) {
+				write();
+			}
+			else {
+				setTimeout(write, Math.ceil(_self.commandDelay / 1000));
+			}
 		},
 		function(err) {
 			_self.commandQueue = [];
