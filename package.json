@@ -6,8 +6,7 @@
     "type": "git",
     "url": "git://github.com/xseignard/thermalPrinter.git"
   },
-  "main": "src/printer.js",
-  "files": [ "src/" ],
+  "main": "./src/printer.js",
   "author": "Xavier Seignard <xavier.seignard@gmail.com>",
   "contributors": [
     {
