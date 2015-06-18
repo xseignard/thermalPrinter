@@ -3,7 +3,6 @@ var util = require('util'),
 	EventEmitter = require('events').EventEmitter,
 	fs = require('fs'),
 	getPixels = require('get-pixels'),
-	deasync = require('deasync'),
 	async = require('async'),
 	sleep = require('sleep'),
 	helpers = require('./helpers');
@@ -200,52 +199,46 @@ Printer.prototype.printLine = function (text) {
 };
 
 Printer.prototype.printImage = function(path, cb){
-	var done = false;
-
 	var _self = this;
+
 	getPixels(path, function(err, pixels){
-		if(!err){
-			var width = pixels.shape[0];
-			var height = pixels.shape[1];
+		if (err) return cb(err);
 
-			if (width != 384 || height > 65635) {
-				throw new Error('Image width must be 384px, height cannot exceed 65635px.');
-			}
+		var width = pixels.shape[0];
+		var height = pixels.shape[1];
 
-			// contruct an array of Uint8Array,
-			// each Uint8Array contains 384/8 pixel samples, corresponding to a whole line
-			var imgData = [];
-			for (var y = 0; y < height; y++) {
-				imgData[y] = new Uint8Array(width/8);
-				for (var x = 0; x < (width/8); x++) {
-					imgData[y][x] = 0;
-					for (var n = 0; n < 8; n++) {
-						var r = pixels.get(x*8+n, y, 0);
-						var g = pixels.get(x*8+n, y, 1);
-						var b = pixels.get(x*8+n, y, 2);
+		if (width != 384 || height > 65635) {
+			return cb(new Error('Image width must be 384px, height cannot exceed 65635px.'));
+		}
 
-						var brightness = helpers.rgbToHsl(r, g, b)[2];
-						// only print dark stuff
-						if (brightness < 0.6) {
-							imgData[y][x] += (1 << n);
-						}
+		// contruct an array of Uint8Array,
+		// each Uint8Array contains 384/8 pixel samples, corresponding to a whole line
+		var imgData = [];
+		for (var y = 0; y < height; y++) {
+			imgData[y] = new Uint8Array(width/8);
+			for (var x = 0; x < (width/8); x++) {
+				imgData[y][x] = 0;
+				for (var n = 0; n < 8; n++) {
+					var r = pixels.get(x*8+n, y, 0);
+					var g = pixels.get(x*8+n, y, 1);
+					var b = pixels.get(x*8+n, y, 2);
+
+					var brightness = helpers.rgbToHsl(r, g, b)[2];
+					// only print dark stuff
+					if (brightness < 0.6) {
+						imgData[y][x] += (1 << n);
 					}
 				}
 			}
+		}
 
-			// send the commands and buffers to the printer
-			_self.printImageData(width, height, imgData);
-			// tell deasync getPixels is done
-			done = true;
-		}
-		else {
-			throw new Error(err);
-		}
+		// send the commands and buffers to the printer
+		_self.printImageData(width, height, imgData);
+
+		// Signal the user that we are done
+		cb(null);
 	});
-	// deasync getPixels
-	while(!done) {
-		deasync.runLoopOnce();
-	}
+
 	return this;
 };
 
