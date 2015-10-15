@@ -6,7 +6,8 @@
     "type": "git",
     "url": "git://github.com/xseignard/thermalPrinter.git"
   },
-  "main": "./src/printer.js",
+  "main": "src/printer.js",
+  "files": [ "src/" ],
   "author": "Xavier Seignard <xavier.seignard@gmail.com>",
   "contributors": [
     {
@@ -31,15 +32,14 @@
   "dependencies": {
     "async": "^0.9.0",
     "deasync": "0.0.10",
-    "get-pixels": "^3.2.1",
-    "serialport": "^1.4.0",
-    "sleep": "^1.1.5"
+    "get-pixels": "^3.2.1"
   },
   "devDependencies": {
     "chai": "^1.9.1",
     "codeclimate-test-reporter": "0.0.3",
     "istanbul": "^0.2.10",
     "jshint": "^2.5.1",
-    "mocha": "^1.19.0"
+    "mocha": "^1.19.0",
+    "serialport": "^1.4.0"
   }
 }
