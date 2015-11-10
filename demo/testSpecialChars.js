@@ -6,7 +6,7 @@ var SerialPort = require('serialport').SerialPort,
 	Printer = require('../src/printer');
 
 var testChars = '';
-for (char in specialChars) {
+for (var char in specialChars) {
 	testChars += char;
 }
 console.log(testChars);
