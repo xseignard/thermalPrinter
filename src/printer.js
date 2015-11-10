@@ -5,7 +5,8 @@ var util = require('util'),
 	getPixels = require('get-pixels'),
 	deasync = require('deasync'),
 	async = require('async'),
-	helpers = require('./helpers');
+	helpers = require('./helpers'),
+	specialChars = require('./specialChars.js');
 
 /*
  * Printer opts.
@@ -29,7 +30,8 @@ var util = require('util'),
  *       maxPrintingDots : 7,
  *       heatingTime : 80,
  *       heatingInterval : 2,
- *       commandDelay: 0
+ *       commandDelay: 0,
+ *       charset: 0
  *     };
  * var printer = new Printer(mySerialPort, opts);
  */
@@ -47,13 +49,15 @@ var Printer = function(serialPort, opts) {
 	this.heatingInterval = opts.heatingInterval || 2;
 	// delay between 2 commands (in µs)
 	this.commandDelay = opts.commandDelay || 0;
+	// charset (USA: 0, by default, will switch to print special chars)
+	this.charset = 0;
 	// command queue
 	this.commandQueue = [];
 	// printmode bytes (normal by default)
 	this.printMode = 0;
 
 	var _self = this;
-	this.reset().sendPrintingParams().print(function() {
+	this.reset().sendPrintingParams().setCharset(this.charset).print(function() {
 		_self.emit('ready');
 	});
 };
@@ -106,6 +110,22 @@ Printer.prototype.writeCommands = function(commands) {
 
 Printer.prototype.reset = function() {
 	var commands = [27, 64];
+	return this.writeCommands(commands);
+};
+
+Printer.prototype.setCharset = function(code) {
+	this.charset = code;
+	var commands = [27, 82, this.charset];
+	return this.writeCommands(commands);
+};
+
+Printer.prototype.setCharCodeTable = function(code) {
+	var commands = [27, 116, code];
+	return this.writeCommands(commands);
+};
+
+Printer.prototype.testPage = function() {
+	var commands = [18, 84];
 	return this.writeCommands(commands);
 };
 
@@ -200,11 +220,38 @@ Printer.prototype.horizontalLine = function(length) {
 };
 
 Printer.prototype.printLine = function (text) {
-	var commands = [new Buffer(text), 10];
+	var _self = this;
+	var chars = text.split('');
+	var commands = [];
+	chars.forEach(function(char, index) {
+		var currentChar = specialChars[char];
+		// if this is a special character
+		if (currentChar) {
+			// if the current charset is the same as the one of the special character
+			if (currentChar.charset === _self.charset) {
+				commands.push(specialChars[char].code);
+			}
+			// if the current charset is different of the one of the special character
+			else {
+				var oldCharset = _self.charset;
+				// set the charset to the one where the special character exists
+				commands.push.apply(commands, [27, 82, currentChar.charset]);
+				// push the special character in the command queue
+				commands.push(specialChars[char].code);
+				// reset the old charset
+				commands.push.apply(commands, [27, 82, oldCharset]);
+			}
+		}
+		// we guess it is not a special character and push it to the command queue
+		else {
+			commands.push(new Buffer(char));
+		}
+	});
+	commands.push(10);
 	return this.writeCommands(commands);
 };
 
-Printer.prototype.printImage = function(path, cb){
+Printer.prototype.printImage = function(path){
 	var done = false;
 
 	var _self = this;

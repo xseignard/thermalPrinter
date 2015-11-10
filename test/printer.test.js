@@ -142,6 +142,27 @@ describe('Printer', function() {
 		});
 	});
 
+	describe('Printer.setCharset()', function() {
+		it('should add the right commands in the queue', function(done) {
+			var expected = [27, 82, 0];
+			verifyCommand(expected, 'setCharset', 0, done);
+		});
+	});
+
+	describe('Printer.setCharCodeTable()', function() {
+		it('should add the right commands in the queue', function(done) {
+			var expected = [27, 116, 0];
+			verifyCommand(expected, 'setCharCodeTable', 0, done);
+		});
+	});
+
+	describe('Printer.testPage()', function() {
+		it('should add the right commands in the queue', function(done) {
+			var expected = [18, 84];
+			verifyCommand(expected, 'testPage', 0, done);
+		});
+	});
+
 	describe('Printer.sendPrintingParams()', function() {
 		it('should add the right commands in the queue', function(done) {
 			var expected = [27, 55, 7, 80, 2];
@@ -293,8 +314,16 @@ describe('Printer', function() {
 
 	describe('Printer.printLine()', function() {
 		it('should add the right commands in the queue', function(done) {
-			var expected = [new Buffer('test'), 10];
+			var expected = [new Buffer('t'), new Buffer('e'), new Buffer('s'), new Buffer('t'), 10];
 			verifyCommand(expected, 'printLine', 'test', done);
+		});
+		it('should add the hex code in queue for special characters', function(done) {
+			var expected = [0x40, 10];
+			verifyCommand(expected, 'printLine', '@', done);
+		});
+		it('should switch the charset for special characters not in the current charset', function(done) {
+			var expected = [27, 82, 1, 0x40, 27, 82, 0, 10];
+			verifyCommand(expected, 'printLine', 'à', done);
 		});
 	});
 

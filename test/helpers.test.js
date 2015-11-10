@@ -18,6 +18,18 @@ describe('Helpers', function() {
 			hsl[1].should.equal(0.7988165680473374);
 			hsl[2].should.equal(0.33137254901960783);
 		});
+		it('should convert rgb color to hsl', function() {
+			var hsl = Helpers.rgbToHsl(152,122,17);
+			hsl[0].should.equal(0.12962962962962962);
+			hsl[1].should.equal(0.7988165680473374);
+			hsl[2].should.equal(0.33137254901960783);
+		});
+		it('should convert rgb color to hsl', function() {
+			var hsl = Helpers.rgbToHsl(152,122,170);
+			hsl[0].should.equal(0.7708333333333334);
+			hsl[1].should.equal(0.220183486238532);
+			hsl[2].should.equal(0.5725490196078431);
+		});
 	});
 
 	describe('Helpers.uint8ArrayToBuffer', function() {
