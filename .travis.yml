@@ -1,6 +1,4 @@
 language: node_js
 node_js:
   - "0.10"
-before_install:
-- sudo apt-get install libgif-dev
-script: make ci
+script: npm run ci
