@@ -18,7 +18,13 @@
     }
   ],
   "scripts": {
-    "test": "make test"
+    "test": "mocha -R spec test/**/*.test.js",
+    "test:watch": "npm run test -- -w",
+    "lint": "jshint src test demo",
+    "coverage": "istanbul cover --dir ./reports _mocha -- -R spec test/**/*.test.js",
+    "codeclimate": "CODECLIMATE_REPO_TOKEN=81648f70a46f19c1b4d5c9cf7f53fa40969af62284554621c22d7d038d2c637e codeclimate < reports/lcov.info",
+    "clean": "rimraf reports",
+    "ci": "npm run clean && npm run lint && npm run test && npm run coverage && npm run codeclimate"
   },
   "keywords": [
     "adafruit",
@@ -42,6 +48,7 @@
     "istanbul": "^0.2.10",
     "jshint": "^2.5.1",
     "mocha": "^1.19.0",
+    "rimraf": "^2.4.3",
     "serialport": "^1.4.0"
   }
 }

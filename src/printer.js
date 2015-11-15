@@ -129,6 +129,27 @@ Printer.prototype.testPage = function() {
 	return this.writeCommands(commands);
 };
 
+Printer.prototype.hasPaper = function(callback) {
+	var command = new Buffer([27, 118, 0]);
+	var _self = this;
+	// waits for the printer answer
+	_self.serialPort.once('data', function(data) {
+		if (data) {
+			var returnCode = data.toString('utf-8');
+			// the return code $ means no paper
+			if (returnCode === '$') {
+				callback(false);
+			}
+			else {
+				callback(true);
+			}
+		}
+	});
+	_self.serialPort.write(command, function() {
+		_self.serialPort.drain();
+	});
+};
+
 Printer.prototype.sendPrintingParams = function() {
 	var commands = [27,55,this.maxPrintingDots, this.heatingTime, this.heatingInterval];
 	return this.writeCommands(commands);
