@@ -1,6 +1,6 @@
 {
   "name": "thermalprinter",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Use node.js to communicate with Adafruit/Sparkfun Thermal Printer",
   "repository": {
     "type": "git",
