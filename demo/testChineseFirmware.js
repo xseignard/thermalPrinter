@@ -16,17 +16,17 @@ serialPort.on('open',function() {
 		maxPrintingDots: 15,
 		heatingTime: 150,
 		heatingInterval: 4,
-		commandDelay: 5
+		commandDelay: 5,
+		chineseFirmware: true
 	};
 	var printer = new Printer(serialPort, opts);
 	printer.on('ready', function() {
 		printer
 			.printLine(testChars)
+			.lineFeed(2)
 			.print(function() {
-				printer.truc().lineFeed(2).print(function() {
-					console.log('done');
-					process.exit();
-				});
+				console.log('done');
+				process.exit();
 			});
 	});
 });

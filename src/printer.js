@@ -6,7 +6,8 @@ var util = require('util'),
 	deasync = require('deasync'),
 	async = require('async'),
 	helpers = require('./helpers'),
-	specialChars = require('./specialChars.js');
+	specialChars = require('./specialChars.js'),
+	codePage = require('./codePage').PC437;
 
 /*
  * Printer opts.
@@ -49,6 +50,9 @@ var Printer = function(serialPort, opts) {
 	this.heatingInterval = opts.heatingInterval || 2;
 	// delay between 2 commands (in µs)
 	this.commandDelay = opts.commandDelay || 0;
+	// chinese firmware, for some reasons some thermal printers come with a firmware that don't handle all latin chars
+	// but we can do some hacky stuff to have almost every chars
+	this.chineseFirmware = opts.chineseFirmware || false;
 	// charset (USA: 0, by default, will switch to print special chars)
 	this.charset = 0;
 	// command queue
@@ -244,29 +248,44 @@ Printer.prototype.printLine = function (text) {
 	var _self = this;
 	var chars = text.split('');
 	var commands = [];
+
 	chars.forEach(function(char, index) {
-		var currentChar = specialChars[char];
-		// if this is a special character
-		if (currentChar) {
-			// if the current charset is the same as the one of the special character
-			if (currentChar.charset === _self.charset) {
-				commands.push(specialChars[char].code);
+			if (_self.chineseFirmware) {
+				var currentChar = specialChars[char];
+				// if this is a special character
+				if (currentChar) {
+					// if the current charset is the same as the one of the special character
+					if (currentChar.charset === _self.charset) {
+						commands.push(specialChars[char].code);
+					}
+					// if the current charset is different of the one of the special character
+					else {
+						var oldCharset = _self.charset;
+						// set the charset to the one where the special character exists
+						commands.push.apply(commands, [27, 82, currentChar.charset]);
+						// push the special character in the command queue
+						commands.push(specialChars[char].code);
+						// reset the old charset
+						commands.push.apply(commands, [27, 82, oldCharset]);
+					}
+				}
+				// we guess it is not a special character and push it to the command queue
+				else {
+					commands.push(new Buffer(char));
+				}
 			}
-			// if the current charset is different of the one of the special character
 			else {
-				var oldCharset = _self.charset;
-				// set the charset to the one where the special character exists
-				commands.push.apply(commands, [27, 82, currentChar.charset]);
-				// push the special character in the command queue
-				commands.push(specialChars[char].code);
-				// reset the old charset
-				commands.push.apply(commands, [27, 82, oldCharset]);
+				var charPos = codePage.indexOf(char);
+				// if the char is in the code table
+				if( charPos != -1 ){
+					// get the hex value and push it into new commands list
+					commands.push(charPos + 128);
+				}
+				else {
+					// otherwise it's probably normal text
+					commands.push(new Buffer(char));
+				}
 			}
-		}
-		// we guess it is not a special character and push it to the command queue
-		else {
-			commands.push(new Buffer(char));
-		}
 	});
 	commands.push(10);
 	return this.writeCommands(commands);
