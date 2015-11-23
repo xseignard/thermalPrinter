@@ -12,8 +12,11 @@ var fakeSerialPort = {
 	}
 };
 
-var verifyCommand = function(expected, commandName, param, done) {
-	var printer = new Printer(fakeSerialPort);
+var verifyCommand = function(expected, commandName, param, done, chineseFirmware) {
+	var opts = {
+		chineseFirmware: chineseFirmware || false
+	};
+	var printer = new Printer(fakeSerialPort, opts);
 	printer.on('ready', function() {
 		printer.commandQueue.should.be.empty;
 		if(param instanceof Array){
@@ -317,13 +320,17 @@ describe('Printer', function() {
 			var expected = [new Buffer('t'), new Buffer('e'), new Buffer('s'), new Buffer('t'), 10];
 			verifyCommand(expected, 'printLine', 'test', done);
 		});
+		it('should add the right commands in the queue for the PC437 char', function(done) {
+			var expected = [0x80, 0x88, 0x83, 0x9c, 10];
+			verifyCommand(expected, 'printLine', 'Çêâ£', done);
+		});
 		it('should add the hex code in queue for special characters', function(done) {
-			var expected = [0x40, 10];
-			verifyCommand(expected, 'printLine', '@', done);
+			var expected = [0x40, 0x41, 10];
+			verifyCommand(expected, 'printLine', '@A', done, true);
 		});
 		it('should switch the charset for special characters not in the current charset', function(done) {
 			var expected = [27, 82, 1, 0x40, 27, 82, 0, 10];
-			verifyCommand(expected, 'printLine', 'à', done);
+			verifyCommand(expected, 'printLine', 'à', done, true);
 		});
 	});
 
