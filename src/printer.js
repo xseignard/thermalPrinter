@@ -350,7 +350,7 @@ Printer.prototype.printImageData =function(width, height, imgData){
 	var commands = [18, 118, height & 255, height >> 8];
 	for (var y = 0; y < imgData.length; y++) {
 		var buf = helpers.uint8ArrayToBuffer(imgData[y]);
-		commands.push.apply(commands, buf);
+		commands.push(buf);
 	}
 	this.writeCommands(commands);
 	return this;
