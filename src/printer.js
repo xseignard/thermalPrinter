@@ -244,12 +244,13 @@ Printer.prototype.horizontalLine = function(length) {
 	return this.writeCommands(commands);
 };
 
-Printer.prototype.printLine = function (text) {
+Printer.prototype.printLine = function (text, lineBreak) {
 	var _self = this;
 	var chars = text.split('');
 	var commands = [];
 
 	chars.forEach(function(char, index) {
+			// handle chinese firmaware
 			if (_self.chineseFirmware) {
 				var currentChar = specialChars[char];
 				// if this is a special character
@@ -274,10 +275,11 @@ Printer.prototype.printLine = function (text) {
 					commands.push(new Buffer(char));
 				}
 			}
+			// handle normal firmware
 			else {
 				var charPos = codePage.indexOf(char);
 				// if the char is in the code table
-				if( charPos != -1 ){
+				if(charPos != -1){
 					// get the hex value and push it into new commands list
 					commands.push(charPos + 128);
 				}
@@ -287,7 +289,8 @@ Printer.prototype.printLine = function (text) {
 				}
 			}
 	});
-	commands.push(10);
+	// if lineBreak is true or not specified, include a line break
+	if (typeof lineBreak === 'undefined' || lineBreak === true) commands.push(10);
 	return this.writeCommands(commands);
 };
 

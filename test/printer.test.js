@@ -328,6 +328,10 @@ describe('Printer', function() {
 			var expected = [0x40, 0x41, 10];
 			verifyCommand(expected, 'printLine', '@A', done, true);
 		});
+		it('should not include a linebreak', function(done) {
+			var expected = [new Buffer('t'), new Buffer('e'), new Buffer('s'), new Buffer('t')];
+			verifyCommand(expected, 'printLine', ['test', false], done);
+		});
 		it('should switch the charset for special characters not in the current charset', function(done) {
 			var expected = [27, 82, 1, 0x40, 27, 82, 0, 10];
 			verifyCommand(expected, 'printLine', 'à', done, true);
