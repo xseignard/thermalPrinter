@@ -89,7 +89,7 @@ Printer.prototype.print = function(callback) {
 			_self.commandQueue = [];
 
 			if(callback) {
-				callback();
+				callback(err);
 			}
 		}
 	);
