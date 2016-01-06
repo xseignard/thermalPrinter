@@ -20,7 +20,7 @@ serialPort.on('open',function() {
 		letters.forEach(function(letter) {
 			invert = !invert;
 			printer
-				.printLine(letter, false)
+				.printText(letter)
 				.inverse(invert);
 		});
 		printer

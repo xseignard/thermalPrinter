@@ -315,26 +315,29 @@ describe('Printer', function() {
 		});
 	});
 
+	describe('Printer.printText() // Printer.addText()', function() {
+		it('should add the right commands in the queue', function(done) {
+			var expected = [new Buffer('t'), new Buffer('e'), new Buffer('s'), new Buffer('t')];
+			verifyCommand(expected, 'printText', 'test', done);
+		});
+		it('should add the right commands in the queue for the PC437 char', function(done) {
+			var expected = [0x80, 0x88, 0x83, 0x9c];
+			verifyCommand(expected, 'addText', 'Çêâ£', done);
+		});
+		it('should add the hex code in queue for special characters', function(done) {
+			var expected = [0x40, 0x41];
+			verifyCommand(expected, 'printText', '@A', done, true);
+		});
+		it('should switch the charset for special characters not in the current charset', function(done) {
+			var expected = [27, 82, 1, 0x40, 27, 82, 0];
+			verifyCommand(expected, 'addText', 'à', done, true);
+		});
+	});
+
 	describe('Printer.printLine()', function() {
 		it('should add the right commands in the queue', function(done) {
 			var expected = [new Buffer('t'), new Buffer('e'), new Buffer('s'), new Buffer('t'), 10];
 			verifyCommand(expected, 'printLine', 'test', done);
-		});
-		it('should add the right commands in the queue for the PC437 char', function(done) {
-			var expected = [0x80, 0x88, 0x83, 0x9c, 10];
-			verifyCommand(expected, 'printLine', 'Çêâ£', done);
-		});
-		it('should add the hex code in queue for special characters', function(done) {
-			var expected = [0x40, 0x41, 10];
-			verifyCommand(expected, 'printLine', '@A', done, true);
-		});
-		it('should not include a linebreak', function(done) {
-			var expected = [new Buffer('t'), new Buffer('e'), new Buffer('s'), new Buffer('t')];
-			verifyCommand(expected, 'printLine', ['test', false], done);
-		});
-		it('should switch the charset for special characters not in the current charset', function(done) {
-			var expected = [27, 82, 1, 0x40, 27, 82, 0, 10];
-			verifyCommand(expected, 'printLine', 'à', done, true);
 		});
 	});
 

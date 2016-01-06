@@ -87,10 +87,7 @@ Printer.prototype.print = function(callback) {
 		},
 		function(err) {
 			_self.commandQueue = [];
-
-			if(callback) {
-				callback(err);
-			}
+			if(callback) callback(err);
 		}
 	);
 };
@@ -247,7 +244,7 @@ Printer.prototype.horizontalLine = function(length) {
 	return this.writeCommands(commands);
 };
 
-Printer.prototype.printLine = function (text, lineBreak) {
+Printer.prototype.printText = Printer.prototype.addText = function (text) {
 	var _self = this;
 	var chars = text.split('');
 	var commands = [];
@@ -292,9 +289,11 @@ Printer.prototype.printLine = function (text, lineBreak) {
 				}
 			}
 	});
-	// if lineBreak is true or not specified, include a line break
-	if (typeof lineBreak === 'undefined' || lineBreak === true) commands.push(10);
 	return this.writeCommands(commands);
+};
+
+Printer.prototype.printLine = function (text) {
+	return this.printText(text).writeCommand(10);
 };
 
 Printer.prototype.printImage = function(path){
