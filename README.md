@@ -20,7 +20,7 @@ You'll need an USB/Serial converter.
 - check the demo sample:
 
 ```js
-var SerialPort = require('serialport').SerialPort,
+var SerialPort = require('serialport'),
 	serialPort = new SerialPort('/dev/ttyUSB0', {
 		baudrate: 19200
 	}),
