@@ -303,6 +303,10 @@ Printer.prototype.printImage = function(path, type){
 
 	// if we recieved a buffer
 	if (typeof path === 'object') {
+		if (type === undefined){
+			throw new Error('You must provide a MIME type when passing a buffer. Ex. (image/png)');
+		}
+		
 		// add required mime type
 		params[1] = type
 	}
