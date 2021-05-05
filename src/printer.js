@@ -296,11 +296,19 @@ Printer.prototype.printLine = function (text) {
 	return this.printText(text).writeCommand(10);
 };
 
-Printer.prototype.printImage = function(path){
+Printer.prototype.printImage = function(path, type){
 	var done = false;
 
+	let params = [path]
+
+	// if we recieved a buffer
+	if (typeof path === 'object') {
+		// add required mime type
+		params[1] = type
+	}
+	
 	var _self = this;
-	getPixels(path, function(err, pixels){
+	getPixels(...params, function(err, pixels){
 		if(!err){
 			var width = pixels.shape[0];
 			var height = pixels.shape[1];
