@@ -30,6 +30,8 @@ const serialPort = new SerialPort('/dev/ttyUSB0', {
 	}),
 const Printer = require('thermalprinter');
 
+var path = __dirname + '/images/nodebot.png';
+
 // wait for the SerialPort to open
 serialPort.on('open',function() {
 	var printer = new Printer(serialPort);
