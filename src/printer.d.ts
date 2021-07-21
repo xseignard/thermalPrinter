@@ -2,12 +2,12 @@ export = Printer;
 import type SerialPort from 'serialport'
 
 interface ThermalPrinterOptions{
-  maxPrintingDots: number
-  heatingTime: number
-  heatingInterval: number
-  commandDelay: number
-  chineseFirmware: boolean
-  charset: number
+  maxPrintingDots?: number
+  heatingTime?: number
+  heatingInterval?: number
+  commandDelay?: number
+  chineseFirmware?: boolean
+  charset?: number
 }
 
 declare class Printer {
