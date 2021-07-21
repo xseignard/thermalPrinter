@@ -100,7 +100,8 @@ Sends queued commands to the printer.
 Hardware reset
 
 #### Printer.setCharset(number)
-Sets 
+Sets character set.
+
 | code | character set |
 |--|--|
 | 0 | USA |
