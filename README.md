@@ -22,7 +22,7 @@ You'll need an USB/Serial converter.
 ```js
 var SerialPort = require('serialport'),
 	serialPort = new SerialPort('/dev/ttyUSB0', {
-		baudrate: 19200
+		baudRate: 19200
 	}),
 	Printer = require('thermalprinter');
 
