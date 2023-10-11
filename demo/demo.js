@@ -15,7 +15,7 @@ serialPort.on('open',function() {
 		commandDelay: 5
 	};
 	var printer = new Printer(serialPort, opts);
-	printer.on('ready', function() {
+	printer.on('ready', async function() {
 		printer
 			.indent(10)
 			.horizontalLine(16)
@@ -27,11 +27,10 @@ serialPort.on('open',function() {
 			.right()
 			.printLine('second line')
 			.printImage(logo)
-			.lineFeed(3)
-			.printImage(nodebots)
-			.print(function() {
-				console.log('done');
-				process.exit();
-			});
+			.lineFeed(3);
+		await printer.printImage(nodebots);
+		await printer.print();
+		console.log('done');
+		process.exit();
 	});
 });
