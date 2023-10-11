@@ -1,9 +1,8 @@
 'use strict';
+
 var util = require('util'),
 	EventEmitter = require('events').EventEmitter,
-	fs = require('fs'),
 	getPixels = require('get-pixels'),
-	deasync = require('deasync'),
 	async = require('async'),
 	helpers = require('./helpers'),
 	specialChars = require('./specialChars.js'),
@@ -60,36 +59,37 @@ var Printer = function(serialPort, opts) {
 	// printmode bytes (normal by default)
 	this.printMode = 0;
 
-	var _self = this;
-	this.reset().sendPrintingParams().setCharset(this.charset).print(function() {
-		_self.emit('ready');
+	this.reset().sendPrintingParams().setCharset(this.charset).print().then(() => {
+		this.emit('ready');
 	});
 };
 util.inherits(Printer, EventEmitter);
 
-Printer.prototype.print = function(callback) {
-	var _self = this;
-	async.eachSeries(
-		_self.commandQueue,
-		function(command, callback) {
-			function write() {
-				_self.serialPort.write(command, function() {
-					_self.serialPort.drain(callback);
-				});
-			}
+Printer.prototype.print = async function() {
+	return new Promise((resolve, reject) => {
+		async.eachSeries(
+				this.commandQueue,
+				(command, callback) => {
+					const write = () => {
+						this.serialPort.write(command, () => {
+							this.serialPort.drain(callback);
+						});
+					}
 
-			if (_self.commandDelay === 0) {
-				write();
-			}
-			else {
-				setTimeout(write, Math.ceil(_self.commandDelay / 1000));
-			}
-		},
-		function(err) {
-			_self.commandQueue = [];
-			if(callback) callback(err);
-		}
-	);
+					if (this.commandDelay === 0) {
+						write();
+					}
+					else {
+						setTimeout(write, Math.ceil(this.commandDelay / 1000));
+					}
+				},
+				(err) => {
+					this.commandQueue = [];
+					if(err) return reject(err);
+					resolve();
+				}
+			);
+	});
 };
 
 Printer.prototype.writeCommand = function(command) {
@@ -133,24 +133,25 @@ Printer.prototype.testPage = function() {
 	return this.writeCommands(commands);
 };
 
-Printer.prototype.hasPaper = function(callback) {
-	var command = new Buffer([27, 118, 0]);
-	var _self = this;
-	// waits for the printer answer
-	_self.serialPort.once('data', function(data) {
-		if (data) {
-			var returnCode = data.toString('utf-8');
-			// the return code $ means no paper
-			if (returnCode === '$') {
-				callback(false);
+Printer.prototype.hasPaper = function() {
+	return new Promise((resolve) => {
+		var command = new Buffer([27, 118, 0]);
+		// waits for the printer answer
+		this.serialPort.once('data', (data) => {
+			if (data) {
+				var returnCode = data.toString('utf-8');
+				// the return code $ means no paper
+				if (returnCode === '$') {
+					resolve(false);
+				}
+				else {
+					resolve(true);
+				}
 			}
-			else {
-				callback(true);
-			}
-		}
-	});
-	_self.serialPort.write(command, function() {
-		_self.serialPort.drain();
+		});
+		this.serialPort.write(command, () => {
+			this.serialPort.drain();
+		});
 	});
 };
 
@@ -297,65 +298,60 @@ Printer.prototype.printLine = function (text) {
 };
 
 Printer.prototype.printImage = function(path, type){
-	var done = false;
+	return new Promise((resolve, reject) => {
 
-	let params = [path]
+		let params = [path]
 
-	// if we recieved a buffer
-	if (typeof path === 'object') {
-		if (type === undefined){
-			throw new Error('You must provide a MIME type when passing a buffer. Ex. (image/png)');
-		}
-		
-		// add required mime type
-		params[1] = type
-	}
-	
-	var _self = this;
-	getPixels(...params, function(err, pixels){
-		if(!err){
-			var width = pixels.shape[0];
-			var height = pixels.shape[1];
-
-			if (width != 384 || height > 65635) {
-				throw new Error('Image width must be 384px, height cannot exceed 65635px.');
+		// if we recieved a buffer
+		if (typeof path === 'object') {
+			if (type === undefined){
+				throw new Error('You must provide a MIME type when passing a buffer. Ex. (image/png)');
 			}
 
-			// contruct an array of Uint8Array,
-			// each Uint8Array contains 384/8 pixel samples, corresponding to a whole line
-			var imgData = [];
-			for (var y = 0; y < height; y++) {
-				imgData[y] = new Uint8Array(width/8);
-				for (var x = 0; x < (width/8); x++) {
-					imgData[y][x] = 0;
-					for (var n = 0; n < 8; n++) {
-						var r = pixels.get(x*8+n, y, 0);
-						var g = pixels.get(x*8+n, y, 1);
-						var b = pixels.get(x*8+n, y, 2);
+			// add required mime type
+			params[1] = type
+		}
 
-						var brightness = helpers.rgbToHsl(r, g, b)[2];
-						// only print dark stuff
-						if (brightness < 0.6) {
-							imgData[y][x] += (1 << n);
+		var _self = this;
+		getPixels(...params, function(err, pixels){
+			if(!err){
+				var width = pixels.shape[0];
+				var height = pixels.shape[1];
+
+				if (width != 384 || height > 65635) {
+					throw new Error('Image width must be 384px, height cannot exceed 65635px.');
+				}
+
+				// contruct an array of Uint8Array,
+				// each Uint8Array contains 384/8 pixel samples, corresponding to a whole line
+				var imgData = [];
+				for (var y = 0; y < height; y++) {
+					imgData[y] = new Uint8Array(width/8);
+					for (var x = 0; x < (width/8); x++) {
+						imgData[y][x] = 0;
+						for (var n = 0; n < 8; n++) {
+							var r = pixels.get(x*8+n, y, 0);
+							var g = pixels.get(x*8+n, y, 1);
+							var b = pixels.get(x*8+n, y, 2);
+
+							var brightness = helpers.rgbToHsl(r, g, b)[2];
+							// only print dark stuff
+							if (brightness < 0.6) {
+								imgData[y][x] += (1 << n);
+							}
 						}
 					}
 				}
-			}
 
-			// send the commands and buffers to the printer
-			_self.printImageData(width, height, imgData);
-			// tell deasync getPixels is done
-			done = true;
-		}
-		else {
-			throw new Error(err);
-		}
+				// send the commands and buffers to the printer
+				_self.printImageData(width, height, imgData);
+				resolve();
+			}
+			else {
+				throw new Error(err);
+			}
+		});
 	});
-	// deasync getPixels
-	while(!done) {
-		deasync.runLoopOnce();
-	}
-	return this;
 };
 
 Printer.prototype.printImageData =function(width, height, imgData){
