@@ -20,13 +20,12 @@ serialPort.on('open',function() {
 		chineseFirmware: true
 	};
 	var printer = new Printer(serialPort, opts);
-	printer.on('ready', function() {
+	printer.on('ready', async function() {
 		printer
 			.printLine(testChars)
-			.lineFeed(2)
-			.print(function() {
-				console.log('done');
-				process.exit();
-			});
+			.lineFeed(2);
+		await printer.print();
+		console.log('done');
+		process.exit();
 	});
 });

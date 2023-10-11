@@ -24,10 +24,9 @@ serialPort.on('open',function() {
 	var printer = new Printer(serialPort);
 	printer.on('ready', function() {
 		twitterClient.stream('statuses/filter', {track: ['#fun']}, function(stream) {
-			stream.on('data', function (data) {
-				printer.printLine(data.text).lineFeed(3).print(function() {
-					console.log(data);
-				});
+			stream.on('data', async function (data) {
+				await printer.printLine(data.text).lineFeed(3).print();
+				console.log(data);
 			});
 		});
 	});

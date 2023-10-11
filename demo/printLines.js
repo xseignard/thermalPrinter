@@ -12,7 +12,7 @@ serialPort.on('open',function() {
 		commandDelay: 5
 	};
 	var printer = new Printer(serialPort, opts);
-	printer.on('ready', function() {
+	printer.on('ready', async function() {
 		// will print a whole line and go to the next line on paper
 		printer.printLine('first line');
 		var letters = 'hello world'.split('');
@@ -24,10 +24,9 @@ serialPort.on('open',function() {
 				.inverse(invert);
 		});
 		printer
-			.lineFeed(3)
-			.print(function() {
-				console.log('done');
-				process.exit();
-			});
+			.lineFeed(3);
+		await printer.print();
+		console.log('done');
+		process.exit();
 	});
 });

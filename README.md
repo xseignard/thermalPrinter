@@ -16,7 +16,7 @@ You'll need an USB/Serial converter.
 
 
 ## Usage
-- install with `npm install thermalprinter --save` 
+- install with `npm install thermalprinter --save`
 - check the demo sample:
 
 ```js
@@ -30,7 +30,7 @@ var path = __dirname + '/images/nodebot.png';
 
 serialPort.on('open',function() {
 	var printer = new Printer(serialPort);
-	printer.on('ready', function() {
+	printer.on('ready', async function() {
 		printer
 			.indent(10)
 			.horizontalLine(16)
@@ -41,12 +41,11 @@ serialPort.on('open',function() {
 			.inverse(true)
 			.big(true)
 			.right()
-			.printLine('second line')
-			.printImage(path)
-			.print(function() {
-				console.log('done');
-				process.exit();
-			});
+			.printLine('second line');
+		await printer.printImage(path);
+		await printer.print();
+		console.log('done');
+		process.exit();
 	});
 });
 ```

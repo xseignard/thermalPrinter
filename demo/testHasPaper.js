@@ -11,10 +11,9 @@ var opts = {
     commandDelay: 5
 };
 
-serialPort.on('open',function() {
+serialPort.on('open',async function() {
 	var printer = new Printer(serialPort, opts);
-	printer.hasPaper(function(paper) {
-		console.log(paper);
-		process.exit();
-	});
+	await printer.hasPaper();
+	console.log(paper);
+	process.exit();
 });
